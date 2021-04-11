@@ -5,7 +5,6 @@ import requests
 import json
 from web3 import Web3
 from MDEXreserve import MDEXreserve  ##读取交易对价格 
-import amountPercent
 
 w3 = Web3()
 headers = {"content-type": "application/json"}
@@ -73,13 +72,20 @@ def dailyEarn(startBlock,payloads):
 ##整合交易对情况数据
 def symbolInfo(bankIndex,amountAddress,decimals1,decimals2,dailyEarn,mainSymbol,myAddress = "2261e84b32f4c365464bfa54ef92a8c6a695fb74",):
     symbolPrice = MDEXreserve(amountAddress,decimals1,decimals2)
-    symbolPercent = amountPercent.Percent(bankIndex,myAddress)
+    symbolPercent = Percent(bankIndex,myAddress)
     symbol1 = symbolPercent*symbolPrice[0]
     symbol2 = symbolPercent*symbolPrice[1]
     if mainSymbol==0:
-        symbolAPY = dailyEarn[0]/symbol1*365/2
+        try:
+            symbolAPY = dailyEarn[0]/symbol1*365/2
+        except:
+            symbolAPY = 0
         amount = symbolPrice[0]
     else:
-        symbolAPY = dailyEarn[0]/symbol2*365/2
+        try:
+            symbolAPY = dailyEarn[0]/symbol2*365/2
+        except:
+            symbolAPY = 0
         amount = symbolPrice[1]
     return symbol1,symbol2,symbolPercent,symbolAPY,dailyEarn,amount
+
